@@ -45,23 +45,3 @@ We aim to build an **automated churn prediction system** that:
 
 ---
 
-## Project Structure
-churn-prediction-service/
-├─ app/
-│ ├─ init.py
-│ ├─ main.py # FastAPI entry point
-│ ├─ schemas.py # Request/response models
-│ ├─ model.py # Model loading and prediction
-├─ pipeline/
-│ ├─ train.py # Training script
-│ ├─ features.py # Feature engineering
-├─ tests/
-│ └─ test_app.py # Basic unit tests
-├─ data/ # Raw data (gitignored)
-├─ artifacts/ # Model outputs (gitignored)
-├─ notebooks/ # Jupyter notebooks
-├─ requirements.txt
-├─ Dockerfile
-├─ docker-compose.yml
-├─ Makefile
-└─ README.md
