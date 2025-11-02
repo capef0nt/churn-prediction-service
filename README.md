@@ -31,7 +31,7 @@ We aim to build an **automated churn prediction system** that:
    - Preprocessing and feature engineering handled in Python scripts.
 
 2. **Model Layer**  
-   - Machine learning model (e.g., Gradient Boosting or Logistic Regression).  
+   - Machine learning model (Logistic Regression).  
    - Trained to classify customers as *likely to churn* or *likely to stay*.
 
 3. **API Layer**  
