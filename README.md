@@ -43,100 +43,99 @@ We aim to build an **automated churn prediction system** that:
    - Deployed to AWS ECS Fargate, with CI/CD pipeline via GitHub Actions.  
    - Future migration to Kubernetes (EKS) with autoscaling and observability.
 
-**Running**  
-Architecture
+5. **Running**  
+
 
 The deployed architecture runs as a containerized web service on AWS ECS (Fargate).
 It uses an Application Load Balancer (ALB) to route incoming HTTP requests to running containers.
 
-Client → ALB (HTTP 80) → ECS Service → Fargate Task (Docker Container)
+- Client → ALB (HTTP 80) → ECS Service → Fargate Task (Docker Container)
 
-Local Development
+ **Local Development**
 
-Create and activate a virtual environment
+   Create and activate a virtual environment
 
-python -m venv .venv
-source .venv/bin/activate
-
-
-Install dependencies
-
-pip install -r requirements.txt
+    python -m venv .venv
+    source .venv/bin/activate
 
 
-Run the FastAPI app
+   Install dependencies
 
-uvicorn app.main:app --reload
+    pip install -r requirements.txt
+
+
+   Run the FastAPI app
+
+    uvicorn app.main:app --reload
 
 
 Access the API
 
-Swagger docs: http://127.0.0.1:8000/docs
+    Swagger docs: http://127.0.0.1:8000/docs
 
-Health check: http://127.0.0.1:8000/health
+    Health check: http://127.0.0.1:8000/health
 
-Containerization
+**Containerization**
 
-Build the Docker image
+   Build the Docker image
 
-docker build -t churn-api:latest .
-
-
-Run the container locally
-
-docker run --rm -p 8000:8000 --name churn-api churn-api:latest
+    docker build -t churn-api:latest .
 
 
-Verify the app
+   Run the container locally
 
-curl http://127.0.0.1:8000/health
-
-
-Expected output:
-
-{"status": "ok", "model_loaded": true}
-
-Deployment on AWS ECS Fargate
-Overview
-
-The trained model is packaged into a FastAPI microservice and deployed using Amazon ECS Fargate.
-This approach enables a scalable, serverless deployment that automatically manages container orchestration, networking, and scaling.
-
-Steps
-
-1. Build and Tag the Docker Image
-
-docker build -t churn-api:latest .
+    docker run --rm -p 8000:8000 --name churn-api churn-api:latest
 
 
-2. Create an ECR Repository
+   Verify the app
 
-aws ecr create-repository --repository-name churn-api
-
-
-3. Authenticate Docker with ECR
-
-aws ecr get-login-password --region <your-region> \
-| docker login --username AWS --password-stdin <account-id>.dkr.ecr.<your-region>.amazonaws.com
+    curl http://127.0.0.1:8000/health
 
 
-4. Push the Image to ECR
+   Expected output:
 
-docker tag churn-api:latest <account-id>.dkr.ecr.<your-region>.amazonaws.com/churn-api:latest
-docker push <account-id>.dkr.ecr.<your-region>.amazonaws.com/churn-api:latest
+    {"status": "ok", "model_loaded": true}
+
+**Deployment on AWS ECS Fargate**
+   Overview
+
+   The trained model is packaged into a FastAPI microservice and deployed using Amazon ECS Fargate.
+   This approach enables a scalable, serverless deployment that automatically manages container 
+   orchestration, networking, and scaling.
+
+   Steps
+
+   1. Build and Tag the Docker Image
+
+    docker build -t churn-api:latest .
 
 
-5. Deploy to ECS Fargate
+   2. Create an ECR Repository
+
+    aws ecr create-repository --repository-name churn-api
+
+
+   3. Authenticate Docker with ECR
+
+    aws ecr get-login-password --region <your-region> \
+    | docker login --username AWS --password-stdin <account-id>.dkr.ecr.<your-region>.amazonaws.com
+
+
+   4. Push the Image to ECR
+
+    docker tag churn-api:latest <account-id>.dkr.ecr.<your-region>.amazonaws.com/churn-api:latest
+    docker push <account-id>.dkr.ecr.<your-region>.amazonaws.com/churn-api:latest
+
+
+    5. Deploy to ECS Fargate
 
 Create a Task Definition using the ECR image.
 
 Configure:
 
-CPU: 0.5 vCPU
-
-Memory: 1 GB
-
-Environment Variable: MODEL_PATH=/app/artifacts/model.joblib
+    CPU: 0.5 vCPU
+    Memory: 1 GB
+    Environment Variable: MODEL_PATH=/app/artifacts/model.joblib
 
 Attach an Application Load Balancer (ALB) targeting port 8000.
 
@@ -145,8 +144,8 @@ Create a Service to run one or more tasks.
 6. Access the Service
 Once deployment is complete and the service is healthy:
 
-http://<alb-dns-name>/health
-http://<alb-dns-name>/docs
+       http://<alb-dns-name>/health
+       http://<alb-dns-name>/docs
 
 Monitoring and Scaling
 
@@ -160,61 +159,63 @@ Networking: Runs within a secure VPC with ALB handling inbound traffic.
 
 
 tech_stack:
-  languages:
-    - Python
-  libraries:
-    - pandas
-    - numpy
-    - scikit-learn
-    - fastapi
-  tools:
+     
+     languages:
+                - Python
+                 libraries:
+                   - pandas
+                   - numpy
+                   - scikit-learn
+                   - fastapi
+    tools:
     - Docker
     - Uvicorn
     - Joblib
-  cloud_services:
+    cloud_services:
     - AWS ECR
     - AWS ECS Fargate
     - AWS CloudWatch
     - AWS Application Load Balancer
 
-model:
-  algorithm: Logistic Regression
-  target_variable: churn_flag
-  input_features:
+     model:
+    algorithm: Logistic Regression
+    target_variable: churn_flag
+    input_features:
     - customer demographics
     - subscription details
     - service usage metrics
 
-deployment:
-  approach: Containerized FastAPI application
-  infrastructure:
+    deployment:
+    approach: Containerized FastAPI application
+    infrastructure:
     - AWS ECS (Fargate) cluster
     - Application Load Balancer for routing
     - CloudWatch Logs for monitoring
-  steps:
+    steps:
     - Build Docker image locally
     - Push image to Amazon ECR
     - Create ECS Task Definition referencing image
     - Deploy ECS Service with Fargate launch type
     - Expose public API through ALB on port 8000
 
-api_endpoints:
-  - path: /health
-    method: GET
-    description: Health check endpoint returning service status
-  - path: /predict
-    method: POST
-    description: Accepts customer data and returns churn probability
-  - path: /docs
-    method: GET
-    description: Auto-generated API documentation via FastAPI Swagger UI
+    api_endpoints:
+    - path: /health
+       method: GET
+       description: Health check endpoint returning service status
+    - path: /predict
+       method: POST
+       description: Accepts customer data and returns churn probability
+    - path: /docs
+       method: GET
+       description: Auto-generated API documentation via FastAPI Swagger UI
 
-outputs:
-  health_response: '{"status": "ok", "model_loaded": true}'
-  prediction_example: '{"churn_probability": 0.78, "churn_flag": 1}'
+    outputs:
+      health_response: '{"status": "ok", "model_loaded": true}'
+      prediction_example: '{"churn_probability": 0.78, "churn_flag": 1}'
 
 author:
-  name: B C. Marimbita
-  contact: bcm637@gmail.com
+ 
+     name: B C. Marimbita
+     contact: bcm637@gmail.com
 
 
