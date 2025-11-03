@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Data & artifacts 
+data/
+artifacts/
+*.joblib
+
+# Git & editors
+.git
+.gitignore
+.vscode/
+.DS_Store
